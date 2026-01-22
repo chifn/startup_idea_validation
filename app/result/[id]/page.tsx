@@ -50,7 +50,7 @@ export default function ResultPage() {
         <div className="text-center">
           <p className="text-xl text-red-600 mb-4">{error || '结果未找到'}</p>
           <button
-            onClick={() => router.push('/analyze')}
+            onClick={() => router.push('/')}
             className="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
           >
             重新开始

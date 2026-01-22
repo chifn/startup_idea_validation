@@ -38,6 +38,139 @@ export default function ResultDisplay({ result }: ResultDisplayProps) {
     return labels[type] || type;
   };
 
+  const formatResultForCopy = () => {
+    const lines: string[] = [];
+    
+    lines.push('='.repeat(60));
+    lines.push('分析结果');
+    lines.push('='.repeat(60));
+    lines.push(`生成时间：${new Date(result.createdAt).toLocaleString('zh-CN')}`);
+    lines.push('');
+    
+    // 想法摘要
+    lines.push('💡 想法摘要');
+    lines.push('-'.repeat(60));
+    lines.push('原始想法：');
+    lines.push(result.ideaSummary.originalIdea);
+    lines.push('');
+    lines.push('提炼后的想法：');
+    lines.push(result.ideaSummary.refinedIdea);
+    lines.push('');
+    
+    // 目标用户画像
+    lines.push('👥 目标用户画像');
+    lines.push('-'.repeat(60));
+    lines.push('用户标签：');
+    lines.push(result.userPersona.tags.join('、'));
+    lines.push('');
+    lines.push('典型一天：');
+    lines.push(result.userPersona.typicalDay);
+    lines.push('');
+    lines.push('典型工作流：');
+    lines.push(result.userPersona.typicalWorkflow);
+    lines.push('');
+    lines.push('常用工具：');
+    lines.push(result.userPersona.tools.join('、'));
+    lines.push('');
+    lines.push('活跃社区：');
+    lines.push(result.userPersona.communities.join('、'));
+    lines.push('');
+    
+    // JTBD
+    lines.push('🎯 Job to be Done (JTBD)');
+    lines.push('-'.repeat(60));
+    lines.push('使用场景：');
+    lines.push(result.jtbd.scenario);
+    lines.push('');
+    lines.push('JTBD 描述：');
+    lines.push(result.jtbd.jobStatement);
+    lines.push('');
+    lines.push('动机类型：');
+    lines.push(getMotivationTypeLabel(result.jtbd.motivationType));
+    lines.push('');
+    lines.push('动机描述：');
+    lines.push(result.jtbd.motivationDescription);
+    lines.push('');
+    
+    // 问题强度评估
+    lines.push('📊 问题强度评估');
+    lines.push('-'.repeat(60));
+    lines.push(`频率评分：${result.problemStrength.frequencyScore}/5`);
+    lines.push(`代价评分：${result.problemStrength.painCostScore}/5`);
+    lines.push(`替代方案痛点评分：${result.problemStrength.alternativesPainScore}/5`);
+    lines.push(`综合评分：${result.problemStrength.overallScore}/5`);
+    lines.push('');
+    lines.push('评分理由：');
+    lines.push(result.problemStrength.reasoning);
+    lines.push('');
+    
+    // 差异化与风险分析
+    lines.push('🔍 差异化与风险分析');
+    lines.push('-'.repeat(60));
+    const differentiationLevel = result.differentiation.level === 'high' ? '高' : 
+                                 result.differentiation.level === 'medium' ? '中' : '低';
+    lines.push(`差异化水平：${differentiationLevel}`);
+    lines.push('');
+    lines.push('已知竞品：');
+    result.differentiation.competitors.forEach(competitor => {
+      lines.push(`  • ${competitor}`);
+    });
+    lines.push('');
+    lines.push('关键差异点：');
+    result.differentiation.keyDifferences.forEach(diff => {
+      lines.push(`  • ${diff}`);
+    });
+    lines.push('');
+    lines.push('主要风险：');
+    result.differentiation.risks.forEach(risk => {
+      lines.push(`  • ${risk}`);
+    });
+    lines.push('');
+    
+    // 下一步验证行动建议
+    lines.push('✅ 下一步验证行动建议');
+    lines.push('-'.repeat(60));
+    
+    // 定性访谈
+    lines.push('1. 定性访谈');
+    lines.push(result.nextSteps.qualitativeInterview.description);
+    lines.push('');
+    lines.push('要找谁访谈：');
+    lines.push(result.nextSteps.qualitativeInterview.whoToTalkTo);
+    lines.push('');
+    lines.push('建议问题：');
+    result.nextSteps.qualitativeInterview.questions.forEach(q => {
+      lines.push(`  • ${q}`);
+    });
+    lines.push('');
+    
+    // 定量信号验证
+    lines.push('2. 定量信号验证');
+    lines.push(result.nextSteps.quantitativeSignal.description);
+    lines.push('');
+    lines.push('具体行动：');
+    lines.push(result.nextSteps.quantitativeSignal.action);
+    lines.push('');
+    lines.push('可用模板：');
+    lines.push(result.nextSteps.quantitativeSignal.template);
+    lines.push('');
+    
+    // 风险假设验证
+    lines.push('3. 风险假设验证');
+    lines.push(result.nextSteps.riskValidation.description);
+    lines.push('');
+    lines.push('要验证的假设：');
+    lines.push(result.nextSteps.riskValidation.hypothesis);
+    lines.push('');
+    lines.push('测试方法：');
+    lines.push(result.nextSteps.riskValidation.testMethod);
+    lines.push('');
+    
+    lines.push('='.repeat(60));
+    
+    return lines.join('\n');
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -45,7 +178,7 @@ export default function ResultDisplay({ result }: ResultDisplayProps) {
         <div className="flex justify-between items-start mb-4">
           <h1 className="text-3xl font-bold text-gray-900">分析结果</h1>
           <button
-            onClick={() => router.push('/analyze')}
+            onClick={() => router.push('/')}
             className="px-4 py-2 text-primary-600 hover:text-primary-700 border border-primary-600 rounded-lg hover:bg-primary-50"
           >
             分析新想法
@@ -271,15 +404,15 @@ export default function ResultDisplay({ result }: ResultDisplayProps) {
       <div className="bg-white rounded-lg shadow-lg p-8">
         <div className="flex gap-4">
           <button
-            onClick={() => router.push('/analyze')}
+            onClick={() => router.push('/')}
             className="flex-1 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium"
           >
             分析新想法
           </button>
           <button
             onClick={() => {
-              const text = JSON.stringify(result, null, 2);
-              navigator.clipboard.writeText(text);
+              const formattedText = formatResultForCopy();
+              navigator.clipboard.writeText(formattedText);
               alert('结果已复制到剪贴板');
             }}
             className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
